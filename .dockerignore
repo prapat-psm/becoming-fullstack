@@ -1,0 +1,9 @@
+.git
+.github
+node_modules
+dist
+.env*
+*.log
+.local-postgres
+.local-postgres-verify
+.npm-cache

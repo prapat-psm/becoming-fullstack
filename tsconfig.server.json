@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "rootDir": "server",
+    "outDir": "dist/server"
+  },
+  "include": ["server/**/*.ts"]
+}

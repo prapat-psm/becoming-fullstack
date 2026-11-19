@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: roombook
+      POSTGRES_DB: roombook
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-roombook-local}
+    ports:
+      - '127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U roombook -d roombook']
+      interval: 3s
+      timeout: 3s
+      retries: 15
+  app:
+    profiles: [app]
+    build: .
+    environment:
+      DATABASE_URL: postgres://roombook:${POSTGRES_PASSWORD:-roombook-local}@db:5432/roombook
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-roombook-demo}
+      DEMO_ADMIN_PASSWORD: ${DEMO_ADMIN_PASSWORD:-roombook-admin}
+      COOKIE_SECURE: 'false'
+    ports:
+      - '127.0.0.1:${ROOMBOOK_HOST_PORT:-3000}:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 3s
+      timeout: 4s
+      retries: 15
+volumes:
+  pgdata:
